@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Система управління студентами</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Система управління студентами</h2>
+    <button onclick="showSummary()">Показати зведення</button>
+    <p id="summary"></p>
+</div>
+
+<script>
+    // JavaScript код
+    class User {
+        constructor(firstName, lastName, birthYear) {
+            this._firstName = firstName;
+            this._lastName = lastName;
+            this._birthYear = birthYear;
+        }
+
+        get age() {
+            return new Date().getFullYear() - this._birthYear;
+        }
+
+        get fullName() {
+            return `${this._firstName} ${this._lastName}`;
+        }
+    }
+
+    class Student extends User {
+        constructor(firstName, lastName, birthYear) {
+            super(firstName, lastName, birthYear);
+            this._grades = new Array(30).fill(null);
+            this._attendance = new Array(30).fill(null);
+        }
+
+        present() {
+            const index = this._attendance.indexOf(null);
+            if (index !== -1) {
+                this._attendance[index] = true;
+            }
+        }
+
+        absent() {
+            const index = this._attendance.indexOf(null);
+            if (index !== -1) {
+                this._attendance[index] = false;
+            }
+        }
+
+        setMark(mark) {
+            const index = this._grades.indexOf(null);
+            if (index !== -1) {
+                this._grades[index] = mark;
+            }
+        }
+
+        get mediumMark() {
+            const validGrades = this._grades.filter(grade => grade !== null);
+            return validGrades.length ? validGrades.reduce((acc, cur) => acc + cur) / validGrades.length : 0;
+        }
+
+        get mediumVisit() {
+            const validAttendance = this._attendance.filter(visit => visit !== null);
+            return validAttendance.length ? validAttendance.filter(visit => visit).length / validAttendance.length : 0;
+        }
+
+        summary() {
+            if (this.mediumMark > 9 && this.mediumVisit > 0.9) {
+                return `Середня оцінка: ${this.mediumMark.toFixed(2)}. Середня відвідуваність: ${this.mediumVisit.toFixed(2)}. Шикарно! Так тримати!`;
+            } else if (this.mediumMark > 9 || this.mediumVisit > 0.9) {
+                return `Середня оцінка: ${this.mediumMark.toFixed(2)}. Середня відвідуваність: ${this.mediumVisit.toFixed(2)}. Добре. Але можеш краще.`;
+            } else {
+                return `Середня оцінка: ${this.mediumMark.toFixed(2)}. Середня відвідуваність: ${this.mediumVisit.toFixed(2)}. Погано! Ви нічому подібному не навчитеся.`;
+            }
+        }
+    }
+
+    function showSummary() {
+        const student1 = new Student("John", "Doe", 2000);
+        student1.present();
+        student1.setMark(9);
+        student1.setMark(10);
+        student1.setMark(8);
+        document.getElementById("summary").textContent = student1.summary();
+    }
+</script>
+
+</body>
+</html>
